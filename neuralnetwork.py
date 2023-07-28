@@ -79,8 +79,8 @@ class NeuralNetwork:
     def get_current_change(self, x, y, cost_derivative, activation_derivatives, last_activation_derivative,
                            current_change=None):
         values = self.feedforward(x)
-        derivative_cost = cost_derivative(values[-1], y)
         if current_change is None:
+            derivative_cost = cost_derivative(values[-1], y)
             current_change = activation_derivatives[-1](values[-1]) * derivative_cost
         new_activation_derivatives = [last_activation_derivative] + activation_derivatives
         for i in range(len(self.weights) - 1, -1, -1):
