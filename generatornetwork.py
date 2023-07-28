@@ -32,9 +32,9 @@ class GeneratorNetwork:
                 generate_inputs = np.array([np.random.randn(self.generator.layers[0]) for j in range(len(batch_x))])
                 generated = [self.generator.get_result(generate_inputs[j]) for j in range(len(batch_x))]
                 self.discriminator.train(generated, batch_y, 1, learning_rate, batch_size, cost_derivative)
-                weights_deltas = [np.zeros(self.generator.weights[i].shape).astype(float) for i in
+                weights_deltas = [np.zeros(self.generator.weights[j].shape).astype(float) for j in
                                   range(len(self.generator.weights))]
-                biases_deltas = [np.zeros(self.generator.biases[i].shape).astype(float) for i in
+                biases_deltas = [np.zeros(self.generator.biases[j].shape).astype(float) for j in
                                  range(len(self.generator.biases))]
                 for value in range(len(batch_x)):
                     discriminator_end = self.discriminator.get_current_change(generated[value], [1], cost_derivative,
@@ -43,10 +43,11 @@ class GeneratorNetwork:
                     self.generator.backpropagation(generate_inputs[value], [1], cost_derivative,
                                                    self.generator.activation_derivatives, weights_deltas, biases_deltas,
                                                    discriminator_end)
-                for i in range(len(self.generator.weights)):
-                    self.generator.weights[i] -= learning_rate * weights_deltas[i] / batch_size
-                    self.generator.biases[i] -= learning_rate * biases_deltas[i] / batch_size
+                for j in range(len(self.generator.weights)):
+                    self.generator.weights[j] -= learning_rate * weights_deltas[j] / batch_size
+                    self.generator.biases[j] -= learning_rate * biases_deltas[j] / batch_size
                 i += batch_size
+                print(i,'/',len(data))
 
     def export(self):
         generator_model = self.generator.export()
