@@ -1,7 +1,6 @@
 from neuralnetwork import NeuralNetwork
 import random
 import numpy as np
-import json
 
 
 class GeneratorNetwork:
@@ -27,20 +26,21 @@ class GeneratorNetwork:
             i = 0
             while i < len(data):
                 batch_x = data[i:min(len(data), i + batch_size)]
-                batch_y = [1 for j in range(len(batch_x))]
+                batch_y = [[1] for j in range(len(batch_x))]
                 self.discriminator.train(batch_x, batch_y, 1, learning_rate, batch_size, cost_derivative)
-                batch_y = [0 for j in range(len(batch_x))]
+                batch_y = [[0] for j in range(len(batch_x))]
                 generate_inputs = np.array([np.random.randn(self.generator.layers[0]) for j in range(len(batch_x))])
-                generated = self.generator.get_result(generate_inputs)
+                generated = [self.generator.get_result(generate_inputs[j]) for j in range(len(batch_x))]
                 self.discriminator.train(generated, batch_y, 1, learning_rate, batch_size, cost_derivative)
                 weights_deltas = [np.zeros(self.generator.weights[i].shape).astype(float) for i in
                                   range(len(self.generator.weights))]
                 biases_deltas = [np.zeros(self.generator.biases[i].shape).astype(float) for i in
                                  range(len(self.generator.biases))]
-                for value in len(batch_x):
-                    discriminator_end = self.discriminator.get_current_change(batch_x[value], 1, cost_derivative,
-                                                                              self.discriminator.activation_derivatives)
-                    self.generator.backpropagation(generate_inputs, 0, cost_derivative,
+                for value in range(len(batch_x)):
+                    discriminator_end = self.discriminator.get_current_change(generated[value], [1], cost_derivative,
+                                                                              self.discriminator.activation_derivatives,
+                                                                              self.generator.activation_derivatives[-1])
+                    self.generator.backpropagation(generate_inputs[value], [1], cost_derivative,
                                                    self.generator.activation_derivatives, weights_deltas, biases_deltas,
                                                    discriminator_end)
                 for i in range(len(self.generator.weights)):

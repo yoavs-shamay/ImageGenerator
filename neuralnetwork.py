@@ -1,7 +1,5 @@
 import random
-
 import numpy as np
-import threading
 import json
 
 
@@ -66,8 +64,8 @@ class NeuralNetwork:
     def backpropagation(self, x, y, cost_derivative, activation_derivatives, weights_deltas, biases_deltas,
                         current_change=None):
         values = self.feedforward(x)
-        derivative_cost = cost_derivative(values[-1], y)
         if current_change is None:
+            derivative_cost = cost_derivative(values[-1], y)
             current_change = activation_derivatives[-1](values[-1]) * derivative_cost
         for i in range(len(self.weights) - 1, -1, -1):
             current_weights_deltas = np.outer(current_change, values[i])
