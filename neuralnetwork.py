@@ -112,5 +112,5 @@ class NeuralNetwork:
 
     def import_model(self, model_str):
         data = json.loads(model_str)
-        self.weights = np.array(data['weights'])
-        self.biases = np.array(data['biases'])
+        self.weights = [np.array(data['weights'][i]) for i in range(len(data['weights']))]
+        self.biases = [np.array(data['biases'][i]) for i in range(len(data['biases']))]

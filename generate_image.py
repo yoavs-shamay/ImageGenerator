@@ -1,7 +1,7 @@
 from generatornetwork import GeneratorNetwork
 import numpy as np
 from functions import *
-from load_cifar import load_data
+from PIL import Image
 
 GENERATOR_LAYERS = [10, 10, 3072]
 GENERATOR_ACTIVATIONS = [leaky_relu, sigmoid]
@@ -18,9 +18,17 @@ BATCH_SIZE = 10
 
 model = GeneratorNetwork(GENERATOR_LAYERS, GENERATOR_ACTIVATIONS, generator_activations_derivatives,
                          DISCRIMINATOR_LAYERS, DISCRIMINATOR_ACTIVATIONS, discriminator_activations_derivatives)
-data = load_data()
-model.train(data, ITERATION_COUNT, LEARNING_RATE, BATCH_SIZE, cost_derivative)
-text = model.export()
-file = open('cifar.json', 'w')
-file.write(text)
+
+file = open('cifar.json', 'r')
+text = file.read()
 file.close()
+model.import_model(text)
+
+image_data = model.generate()
+image_pixels = []
+for i in range(32):
+    image_pixels.append([])
+    for j in range(32):
+        image_pixels[i].append([image_data[i * 32 + j] * 255, image_data[i * 32 + j + 1024] * 255, image_data[i * 32 + j + 2048] * 255])
+image = Image.fromarray(np.array(image_pixels, dtype=np.uint8))
+image.show()

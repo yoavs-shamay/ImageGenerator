@@ -48,6 +48,10 @@ class GeneratorNetwork:
                     self.generator.biases[j] -= learning_rate * biases_deltas[j] / batch_size
                 i += batch_size
                 print(i,'/',len(data))
+            text = self.export()
+            file = open('cifar.json', 'w')
+            file.write(text)
+            file.close()
 
     def export(self):
         generator_model = self.generator.export()
