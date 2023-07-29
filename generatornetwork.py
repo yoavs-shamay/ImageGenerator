@@ -52,15 +52,15 @@ class GeneratorNetwork:
                     self.generator.biases[j] -= learning_rate * biases_deltas[j] / batch_size
                 i += batch_size
                 if debug:
-                    print(i,'/',len(data))
-                    count = 0
-                    for _ in range(10):
-                        cur = self.generate()
-                        dis = self.discriminator.get_result(cur)
-                        if dis[0] > 0.5:
-                            count += 1
-                    print(count, '/', 10)
-                    if i % 1000 == 0:
+                    if i % 100 == 0:
+                        print(i,'/',len(data))
+                        count = 0
+                        for _ in range(100):
+                            cur = self.generate()
+                            dis = self.discriminator.get_result(cur)
+                            if dis[0] > 0.5:
+                                count += 1
+                        print(count, '/', 100)
                         text = self.export()
                         file = open('mnist_generator.json', 'w')
                         file.write(text)

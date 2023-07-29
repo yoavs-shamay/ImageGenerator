@@ -23,6 +23,6 @@ image_pixels = []
 for i in range(28):
     image_pixels.append([])
     for j in range(28):
-        image_pixels[i].append(image_data[i * 28 + j])
-image = Image.fromarray(np.array(image_pixels).get(), 'L')
+        image_pixels[i].append(image_data[i * 28 + j] * 255)
+image = Image.fromarray(np.array(image_pixels, dtype=np.uint8).get(), 'L')
 image.show()

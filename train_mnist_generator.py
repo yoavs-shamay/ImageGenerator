@@ -12,8 +12,8 @@ discriminator_activations_derivatives = [derivative[DISCRIMINATOR_ACTIVATIONS[i]
 COST = lms
 cost_derivative = derivative[COST]
 ITERATION_COUNT = 500
-LEARNING_RATE = 0.3
-BATCH_SIZE = 20
+LEARNING_RATE = 0.5
+BATCH_SIZE = 5
 
 model = GeneratorNetwork(GENERATOR_LAYERS, GENERATOR_ACTIVATIONS, generator_activations_derivatives,
                          DISCRIMINATOR_LAYERS, DISCRIMINATOR_ACTIVATIONS, discriminator_activations_derivatives)
