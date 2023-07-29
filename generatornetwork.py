@@ -20,25 +20,22 @@ class GeneratorNetwork:
         rand = np.random.randn(self.generator.layers[0])
         return self.generator.get_result(rand)
 
-    def train(self, data, iteration_count, learning_rate, batch_size, cost_derivative):
+    def train(self, data, iteration_count, learning_rate, batch_size, cost_derivative, debug=False):
         for iteration in range(iteration_count):
             random.shuffle(data)
             i = 0
             while i < len(data):
                 batch_x = data[i:min(len(data), i + batch_size)]
                 batch_y = [[1] for j in range(len(batch_x))]
-                for a in range(len(batch_x)):
-                    batch_x[a] += np.random.uniform(low=0, high=0.2, size=self.discriminator.layers[0])
+                noise = np.array([np.random.uniform(size=self.generator.layers[0], low=0, high=0.2) for j in range(len(batch_y))])
+                batch_y -= noise
                 self.discriminator.train(batch_x, batch_y, 1, learning_rate, batch_size, cost_derivative)
                 batch_y = [[0] for j in range(len(batch_x))]
-                noise = np.array([np.random.randn(self.generator.layers[0]) for j in range(len(batch_x))])
+                noise = np.array([np.random.uniform(size=self.generator.layers[0], low=0, high=0.2) for j in range(len(batch_y))])
                 batch_y += noise
                 generate_inputs = np.array([np.random.randn(self.generator.layers[0]) for j in range(len(batch_x))])
                 generated = [self.generator.get_result(generate_inputs[j]) for j in range(len(batch_x))]
-                generated_noised = [np.zeros(self.generator.layers[0]) for j in range(len(batch_x))]
-                for a in range(len(batch_x)):
-                    generated_noised[a] = generated[a] + np.random.uniform(low=0, high=0.2, size=self.discriminator.layers[0])
-                self.discriminator.train(generated_noised, batch_y, 1, learning_rate, batch_size, cost_derivative)
+                self.discriminator.train(generated, batch_y, 1, learning_rate, batch_size, cost_derivative)
                 weights_deltas = [np.zeros(self.generator.weights[j].shape).astype(float) for j in
                                   range(len(self.generator.weights))]
                 biases_deltas = [np.zeros(self.generator.biases[j].shape).astype(float) for j in
@@ -54,19 +51,20 @@ class GeneratorNetwork:
                     self.generator.weights[j] -= learning_rate * weights_deltas[j] / batch_size
                     self.generator.biases[j] -= learning_rate * biases_deltas[j] / batch_size
                 i += batch_size
-                print(i,'/',len(data))
-                count = 0
-                for _ in range(10):
-                    cur = self.generator.get_result(np.random.randn(self.generator.layers[0]))
-                    dis = self.discriminator.get_result(cur)
-                    if dis[0] > 0.5:
-                        count += 1
-                print(count, '/', 10)
-                if i % 1000 == 0:
-                    text = self.export()
-                    file = open('mnist_generator.json', 'w')
-                    file.write(text)
-                    file.close()
+                if debug:
+                    print(i,'/',len(data))
+                    count = 0
+                    for _ in range(10):
+                        cur = self.generate()
+                        dis = self.discriminator.get_result(cur)
+                        if dis[0] > 0.5:
+                            count += 1
+                    print(count, '/', 10)
+                    if i % 1000 == 0:
+                        text = self.export()
+                        file = open('mnist_generator.json', 'w')
+                        file.write(text)
+                        file.close()
 
     def export(self):
         generator_model = self.generator.export()

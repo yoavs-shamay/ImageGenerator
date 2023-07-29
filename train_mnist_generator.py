@@ -18,14 +18,14 @@ BATCH_SIZE = 20
 
 model = GeneratorNetwork(GENERATOR_LAYERS, GENERATOR_ACTIVATIONS, generator_activations_derivatives,
                          DISCRIMINATOR_LAYERS, DISCRIMINATOR_ACTIVATIONS, discriminator_activations_derivatives)
-'''
+
 file = open('mnist_generator.json', 'r')
 text = file.read()
 file.close()
 model.import_model(text)
-'''
+
 data = np.array(get_train()[0].tolist() + get_test()[0].tolist())
-model.train(data, ITERATION_COUNT, LEARNING_RATE, BATCH_SIZE, cost_derivative)
+model.train(data, ITERATION_COUNT, LEARNING_RATE, BATCH_SIZE, cost_derivative, debug=True)
 text = model.export()
 file = open('mnist_generator.json', 'w')
 file.write(text)
