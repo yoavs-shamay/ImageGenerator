@@ -28,7 +28,7 @@ class GeneratorNetwork:
                 batch_x = data[i:min(len(data), i + batch_size)]
                 batch_y = [[1] for j in range(len(batch_x))]
                 for a in range(len(batch_x)):
-                    batch_x[a] += np.random.randn(self.discriminator.layers[0])
+                    batch_x[a] += np.random.uniform(low=0, high=0.2, size=self.discriminator.layers[0])
                 self.discriminator.train(batch_x, batch_y, 1, learning_rate, batch_size, cost_derivative)
                 batch_y = [[0] for j in range(len(batch_x))]
                 noise = np.array([np.random.randn(self.generator.layers[0]) for j in range(len(batch_x))])
@@ -37,7 +37,7 @@ class GeneratorNetwork:
                 generated = [self.generator.get_result(generate_inputs[j]) for j in range(len(batch_x))]
                 generated_noised = [np.zeros(self.generator.layers[0]) for j in range(len(batch_x))]
                 for a in range(len(batch_x)):
-                    generated_noised[a] = generated[a] + np.random.randn(self.discriminator.layers[0])
+                    generated_noised[a] = generated[a] + np.random.uniform(low=0, high=0.2, size=self.discriminator.layers[0])
                 self.discriminator.train(generated_noised, batch_y, 1, learning_rate, batch_size, cost_derivative)
                 weights_deltas = [np.zeros(self.generator.weights[j].shape).astype(float) for j in
                                   range(len(self.generator.weights))]
@@ -56,15 +56,15 @@ class GeneratorNetwork:
                 i += batch_size
                 print(i,'/',len(data))
                 count = 0
-                for _ in range(batch_size):
+                for _ in range(10):
                     cur = self.generator.get_result(np.random.randn(self.generator.layers[0]))
                     dis = self.discriminator.get_result(cur)
                     if dis[0] > 0.5:
                         count += 1
-                print(count, '/', batch_size)
+                print(count, '/', 10)
                 if i % 1000 == 0:
                     text = self.export()
-                    file = open('cifar.json', 'w')
+                    file = open('mnist_generator.json', 'w')
                     file.write(text)
                     file.close()
 

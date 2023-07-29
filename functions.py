@@ -56,19 +56,6 @@ def lms_derivative(x, y):
         res.append(2 * (x[i] - y[i]))
     return res
 
-def binary_crossentropy(x, y):
-    res = 0
-    for i in range(len(x)):
-        res += y[i] * np.log(x[i]) + (1 - y[i]) * np.log(1 - x[i])
-    return -res / len(x)
-
-
-def binary_crossentropy_derivative(x, y):
-    res = []
-    for i in range(len(x)):
-        res.append((x[i] - y[i]) / (x[i] * (1 - x[i])))
-    return res
-
 
 def tanh_(x):
     return np.tanh(x) / 2 + 0.5
@@ -84,4 +71,4 @@ def tanh_derivative_(x):
 tanh_derivative = np.vectorize(tanh_derivative_)
 
 
-derivative = {sigmoid: sigmoid_derivative, relu: relu_derivative, leaky_relu: leaky_relu_derivative, lms: lms_derivative, binary_crossentropy: binary_crossentropy_derivative, tanh: tanh_derivative}
+derivative = {sigmoid: sigmoid_derivative, relu: relu_derivative, leaky_relu: leaky_relu_derivative, lms: lms_derivative, tanh: tanh_derivative}
