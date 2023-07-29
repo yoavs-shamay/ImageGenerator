@@ -66,7 +66,7 @@ class NeuralNetwork:
         values = self.feedforward(x)
         if current_change is None:
             derivative_cost = np.array(cost_derivative(values[-1], y))
-            current_change = np.outer(activation_derivatives[-1](np.array(values[-1])), derivative_cost).ravel()
+            current_change = activation_derivatives[-1](np.array(values[-1])) * derivative_cost
         for i in range(len(self.weights) - 1, -1, -1):
             current_weights_deltas = np.outer(current_change, np.array(values[i]))
             current_biases_deltas = np.array(current_change)
