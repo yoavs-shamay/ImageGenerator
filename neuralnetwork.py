@@ -84,7 +84,7 @@ class NeuralNetwork:
             current_change = activation_derivatives[-1](values[-1]) * derivative_cost
         new_activation_derivatives = [last_activation_derivative] + activation_derivatives
         for i in range(len(self.weights) - 1, -1, -1):
-            current_change = np.dot(self.weights[i].transpose(), current_change) * new_activation_derivatives[i - 1](
+            current_change = np.dot(self.weights[i].transpose(), current_change) * new_activation_derivatives[i](
                 values[i])
         return current_change
 
