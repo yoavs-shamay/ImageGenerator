@@ -27,11 +27,18 @@ class GeneratorNetwork:
             while i < len(data):
                 batch_x = data[i:min(len(data), i + batch_size)]
                 batch_y = [[1] for j in range(len(batch_x))]
+                for a in range(len(batch_x)):
+                    batch_x[a] += np.random.randn(self.discriminator.layers[0])
                 self.discriminator.train(batch_x, batch_y, 1, learning_rate, batch_size, cost_derivative)
                 batch_y = [[0] for j in range(len(batch_x))]
+                noise = np.array([np.random.randn(self.generator.layers[0]) for j in range(len(batch_x))])
+                batch_y += noise
                 generate_inputs = np.array([np.random.randn(self.generator.layers[0]) for j in range(len(batch_x))])
                 generated = [self.generator.get_result(generate_inputs[j]) for j in range(len(batch_x))]
-                self.discriminator.train(generated, batch_y, 1, learning_rate, batch_size, cost_derivative)
+                generated_noised = [np.zeros(self.generator.layers[0]) for j in range(len(batch_x))]
+                for a in range(len(batch_x)):
+                    generated_noised[a] = generated[a] + np.random.randn(self.discriminator.layers[0])
+                self.discriminator.train(generated_noised, batch_y, 1, learning_rate, batch_size, cost_derivative)
                 weights_deltas = [np.zeros(self.generator.weights[j].shape).astype(float) for j in
                                   range(len(self.generator.weights))]
                 biases_deltas = [np.zeros(self.generator.biases[j].shape).astype(float) for j in

@@ -3,18 +3,13 @@ import numpy as np
 from functions import *
 from PIL import Image
 
-GENERATOR_LAYERS = [10, 10, 3072]
-GENERATOR_ACTIVATIONS = [leaky_relu, sigmoid]
+GENERATOR_LAYERS = [20, 100, 3072]
+GENERATOR_ACTIVATIONS = [leaky_relu, tanh]
 generator_activations_derivatives = [derivative[GENERATOR_ACTIVATIONS[i]] for i in range(1, len(GENERATOR_ACTIVATIONS))]
-DISCRIMINATOR_LAYERS = [3072, 10, 1]
+DISCRIMINATOR_LAYERS = [3072, 30, 1]
 DISCRIMINATOR_ACTIVATIONS = [leaky_relu, sigmoid]
 discriminator_activations_derivatives = [derivative[DISCRIMINATOR_ACTIVATIONS[i]] for i in
                                          range(1, len(DISCRIMINATOR_ACTIVATIONS))]
-COST = lms
-cost_derivative = derivative[COST]
-ITERATION_COUNT = 500
-LEARNING_RATE = 5
-BATCH_SIZE = 10
 
 model = GeneratorNetwork(GENERATOR_LAYERS, GENERATOR_ACTIVATIONS, generator_activations_derivatives,
                          DISCRIMINATOR_LAYERS, DISCRIMINATOR_ACTIVATIONS, discriminator_activations_derivatives)
