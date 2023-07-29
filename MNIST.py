@@ -1,5 +1,5 @@
 from keras.datasets import mnist
-import numpy as np
+import cupy as np
 
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 x_train = x_train.reshape((len(x_train), 784))

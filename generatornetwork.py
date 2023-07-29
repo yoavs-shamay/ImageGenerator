@@ -1,6 +1,6 @@
 from neuralnetwork import NeuralNetwork
 import random
-import numpy as np
+import cupy as np
 
 
 class GeneratorNetwork:
@@ -26,12 +26,12 @@ class GeneratorNetwork:
             i = 0
             while i < len(data):
                 batch_x = data[i:min(len(data), i + batch_size)]
-                batch_y = [[1] for j in range(len(batch_x))]
-                noise = np.array([np.random.uniform(size=self.generator.layers[0], low=0, high=0.2) for j in range(len(batch_y))])
+                batch_y = np.array([[1] for j in range(len(batch_x))]).astype(float)
+                noise = np.random.uniform(low=0,high=0.2,size=(len(batch_y), 1))
                 batch_y -= noise
                 self.discriminator.train(batch_x, batch_y, 1, learning_rate, batch_size, cost_derivative)
-                batch_y = [[0] for j in range(len(batch_x))]
-                noise = np.array([np.random.uniform(size=self.generator.layers[0], low=0, high=0.2) for j in range(len(batch_y))])
+                batch_y = np.array([[0] for j in range(len(batch_x))]).astype(float)
+                noise = np.random.uniform(low=0,high=0.2,size=(len(batch_y), 1))
                 batch_y += noise
                 generate_inputs = np.array([np.random.randn(self.generator.layers[0]) for j in range(len(batch_x))])
                 generated = [self.generator.get_result(generate_inputs[j]) for j in range(len(batch_x))]

@@ -1,4 +1,4 @@
-import numpy as np
+import cupy as np
 
 
 def sigmoid_(x):
@@ -9,7 +9,7 @@ sigmoid = np.vectorize(sigmoid_)
 
 
 def sigmoid_derivative_(x):
-    return sigmoid(x) * (1 - sigmoid(x))
+    return (1.0 / (1.0 + np.exp(-x))) * (1 - (1.0 / (1.0 + np.exp(-x))))
 
 
 sigmoid_derivative = np.vectorize(sigmoid_derivative_)
@@ -65,7 +65,7 @@ tanh = np.vectorize(tanh_)
 
 
 def tanh_derivative_(x):
-    return (1 - tanh(x) ** 2) / 2
+    return (1 - np.tanh(x) ** 2) / 2
 
 
 tanh_derivative = np.vectorize(tanh_derivative_)

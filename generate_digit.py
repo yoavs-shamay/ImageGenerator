@@ -1,5 +1,5 @@
 from generatornetwork import GeneratorNetwork
-import numpy as np
+import cupy as np
 from functions import *
 from PIL import Image
 

@@ -1,5 +1,4 @@
 from generatornetwork import GeneratorNetwork
-import numpy as np
 from functions import *
 from MNIST import *
 

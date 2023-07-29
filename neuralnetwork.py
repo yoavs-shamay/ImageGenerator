@@ -1,5 +1,5 @@
 import random
-import numpy as np
+import cupy as np
 import json
 
 
@@ -21,7 +21,7 @@ class NeuralNetwork:
         i = 0
         for i in range(len(self.weights)):
             new_a = []
-            cur = np.dot(self.weights[i], a) + self.biases[i]
+            cur = np.dot(self.weights[i], np.array(a)) + self.biases[i]
             for j in range(len(self.weights[i])):
                 new_a.append(self.activations[i](cur[j]))
             a = np.array(new_a)
@@ -32,7 +32,7 @@ class NeuralNetwork:
         i = 0
         for i in range(len(self.weights)):
             new_a = []
-            cur = np.dot(self.weights[i], a) + self.biases[i]
+            cur = np.dot(self.weights[i], np.array(a)) + self.biases[i]
             for j in range(len(self.weights[i])):
                 new_a.append(self.activations[i](cur[j]))
             res.append(new_a)
@@ -65,27 +65,27 @@ class NeuralNetwork:
                         current_change=None):
         values = self.feedforward(x)
         if current_change is None:
-            derivative_cost = cost_derivative(values[-1], y)
-            current_change = activation_derivatives[-1](np.array(values[-1])) * derivative_cost
+            derivative_cost = np.array(cost_derivative(values[-1], y))
+            current_change = np.outer(activation_derivatives[-1](np.array(values[-1])), derivative_cost).ravel()
         for i in range(len(self.weights) - 1, -1, -1):
-            current_weights_deltas = np.outer(current_change, values[i])
+            current_weights_deltas = np.outer(current_change, np.array(values[i]))
             current_biases_deltas = np.array(current_change)
             weights_deltas[i] += current_weights_deltas
-            biases_deltas[i] += current_biases_deltas
+            biases_deltas[i] += current_biases_deltas.reshape(biases_deltas[i].shape)
             if i > 0:
                 current_change = np.dot(self.weights[i].transpose(), current_change) * activation_derivatives[i - 1](
-                    values[i])
+                    np.array(values[i]))
 
     def get_current_change(self, x, y, cost_derivative, activation_derivatives, last_activation_derivative,
                            current_change=None):
         values = self.feedforward(x)
         if current_change is None:
-            derivative_cost = cost_derivative(values[-1], y)
-            current_change = activation_derivatives[-1](values[-1]) * derivative_cost
+            derivative_cost = np.array(cost_derivative(values[-1], y))
+            current_change = np.outer(activation_derivatives[-1](np.array(values[-1])), derivative_cost).ravel()
         new_activation_derivatives = [last_activation_derivative] + activation_derivatives
         for i in range(len(self.weights) - 1, -1, -1):
-            current_change = np.dot(self.weights[i].transpose(), current_change) * new_activation_derivatives[i](
-                values[i])
+            current_change = np.dot(self.weights[i].transpose(), current_change) * new_activation_derivatives[i - 1](
+                np.array(values[i]))
         return current_change
 
     def test_classification(self, data_x, data_y):
